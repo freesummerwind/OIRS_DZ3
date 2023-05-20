@@ -110,6 +110,13 @@ class Post:
 
 
 def get_groups_info(vk, groups_id, themes):
+    """
+    Функция, которая выгружает данные о группах вк
+    :param vk: api вк сессии
+    :param groups_id: id/address групп вк, массив строк
+    :param themes: тематики соответствующих групп вк, массив строк
+    :return: список групп с информацией о них, массив объектов класса Group
+    """
     getting_fields = ['name', 'status', 'description', 'type', 'activity', 'can_post', 'can_suggest',
                       'main_section', 'members_count', 'verified', 'photo_100']
     groups_info = vk.groups.getById(group_ids=groups_id, fields=getting_fields)
