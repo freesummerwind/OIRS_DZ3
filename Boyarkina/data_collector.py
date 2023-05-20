@@ -107,3 +107,41 @@ class Post:
             'music_number': self.__music_num,
             'music_info': self.__music_info
         }
+
+
+def get_groups_info(vk, groups_id, themes):
+    getting_fields = ['name', 'status', 'description', 'type', 'activity', 'can_post', 'can_suggest',
+                      'main_section', 'members_count', 'verified', 'photo_100']
+    groups_info = vk.groups.getById(group_ids=groups_id, fields=getting_fields)
+    result_groups = []
+    for i in range(len(groups_info)):
+        group = groups_info[i]
+        posts_info = vk.wall.get(owner_id=-1*group['id'], count=15)
+        result_posts = []
+        for post in posts_info['items']:
+            media = post['attachments']
+            photo_num = 0
+            photos = []
+            music_num = 0
+            music = []
+            for element in media:
+                if element['type'] == 'photo':
+                    photo_num += 1
+                    photos.append({
+                        'text': element['photo']['text'],
+                        'url': element['photo']['sizes'][3]['url']
+                    })
+                elif element['type'] == 'audio':
+                    music_num += 1
+                    music.append({
+                        'title': element['audio']['title'],
+                        'artist': element['audio']['artist']
+                    })
+            result_posts.append(Post(post['text'], post['likes']['count'], post['reposts']['count'], post['post_type'],
+                                     photo_num, photos, music_num, music))
+        result_groups.append(Group(-1*group['id'], group['name'], group['status'], group['description'], group['type'],
+                                   group['activity'], group['can_post'], group['can_suggest'], group['main_section'],
+                                   group['members_count'], group['verified'], group['photo_100'], result_posts,
+                                   themes[i]))
+
+    return result_groups
