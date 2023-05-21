@@ -4,6 +4,8 @@ https://docs.google.com/document/d/1ue0_5ELdnJO6c1I2naOoDDJg5wkNU_9L1g0zoRMLojU/
 
 Часть 1:
 Файл save_posts.py + файл requirments.txt
+
+
 Будем классифицировать посты по 4 классам (темам):
 1) Кулинария
 2) Наука
