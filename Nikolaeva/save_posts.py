@@ -35,7 +35,7 @@ import pypyodbc
 myServer = 'DESKTOP-UJ2J63A\SQLEXPRESS'
 myDatabase = 'VK_POSTS'
 
-access_token = 'vk1.a._ARQSgjFy7fBFSBXb_GJAO3hKWQ4U3KyU2f8x6XG83jRg94yv8m1Ivd5z_OjjMsmo9xPTHS4hXyE-RhWnb4osGeYp9zgO0S4BXZ85wzNsnPGunUNcDGtPsJ_QhdtE0TZc0gG7QB0LF8KsZoBwchyqqYrJULst8UtKz16nxKBr0joStqJtHfFu_QlUIkOT_FzVUwmK0BZlIsxlFuIug_xEw'
+access_token = ''
 vk_session = vk_api.VkApi(token=access_token)
 vk = vk_session.get_api()
 
