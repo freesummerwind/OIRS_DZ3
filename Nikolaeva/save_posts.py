@@ -132,12 +132,11 @@ def get_media(vk_api, id_gr):
     return photos, videos, audios, articles
 
 # запись в базу данных
-connection = pypyodbc.connect('Driver={ODBC Driver 17 for SQL Server};'
-                              'Server='+ myServer + ';'
-                              'Database=' + myDatabase + ';'
-                              'Trusted_Connection=yes;')
-
 def write_to_db(myData):
+    connection = pypyodbc.connect('Driver={ODBC Driver 17 for SQL Server};'
+                                  'Server=' + myServer + ';'
+                                  'Database=' + myDatabase + ';'
+                                  'Trusted_Connection=yes;')
     cursor = connection.cursor()
     mySQLQuery = ("""
                     INSERT INTO dbo.posts (id, name, activity, status, description, text, image, topics,
@@ -262,5 +261,6 @@ def update_output(n_clicks, input1, input2):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
 
 
