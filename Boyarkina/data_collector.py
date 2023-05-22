@@ -46,19 +46,24 @@ class Group:
         return self.__name
 
     def get_features(self):
-        return {
-            'status': self.__status,
-            'description': self.__desc,
-            'type': self.__type,
-            'activity': self.__activity,
-            'can_make_post': self.__can_make_post,
-            'can_suggest_post': self.__can_suggest_post,
-            'main_section': self.__main_section,
-            'subscribers_number': self.__subscribers,
-            'is_verified': self.__is_verified,
-            'photo_url': self.__photo_url,
-            'posts_15': self.__last_15_posts
-        }
+        return [
+            self.__status,
+            self.__desc,
+            self.__type,
+            self.__activity,
+            self.__can_make_post,
+            self.__can_suggest_post,
+            self.__main_section,
+            self.__subscribers,
+            self.__is_verified,
+            self.__photo_url
+        ]
+
+    def get_posts(self):
+        prepared_posts = []
+        for post in self.__last_15_posts:
+            prepared_posts.append(post.get_fields())
+        return prepared_posts
 
     def get_theme(self):
         return self.__theme
