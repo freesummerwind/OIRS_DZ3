@@ -128,7 +128,7 @@ def get_groups_info(vk, groups_id, themes):
     result_groups = []
     for i in range(len(groups_info)):
         group = groups_info[i]
-        posts_info = vk.wall.get(owner_id=-1*group['id'], count=15)
+        posts_info = vk.wall.get(owner_id=-1 * group['id'], count=15)
         result_posts = []
         for post in posts_info['items']:
             media = post['attachments']
