@@ -1,3 +1,13 @@
+from dash import Dash, html, dcc, Input, State, Output
+from dash.exceptions import PreventUpdate
+import json
+import sqlite3
+import vk_api
+
+VK_TOKEN = 'token'
+FILENAME = 'database.db'
+
+
 class Group:
     """
     Класс, описывающий группу вк, ее фичи и тематику
@@ -158,3 +168,123 @@ def get_groups_info(vk, groups_id, themes):
                   themes[i]))
 
     return result_groups
+
+
+def parse_vk_groups(vk_token, groups_id, themes, db_path):
+    """
+    Функция, которая подключается к вк, получает данные о группах и записывает их в базу данных
+    :param vk_token: вк токен, string
+    :param groups_id: список адресов групп, массив string
+    :param themes: тематики групп, массив string
+    :param db_path: путь к файлу, содержащему sqlite базу данных, string
+    :return: ничего не возвращает
+    """
+    vk_session = vk_api.VkApi(token=vk_token)
+    vk = vk_session.get_api()
+    parsed_groups = get_groups_info(vk, groups_id, themes)
+    db = sqlite3.connect(db_path)
+    cursor_obj = db.cursor()
+    for group in parsed_groups:
+        cursor_obj.execute("insert into groups values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                           [group.get_id(), group.get_name()] + group.get_features()
+                           + [json.dumps(group.get_posts(), ensure_ascii=False)] + [group.get_theme()])
+    db.commit()
+    db.close()
+
+
+def get_10_groups_from_db(db_path):
+    """
+    Функция, возвращающая html таблицу, содержащую информацию о 10 последних добавленных группах в базу данных
+    :param db_path: путь к файлу, содержащему sqlite базу данных, string
+    :return: html-таблица с 10 группами из базы данных
+    """
+    column_names = ['id', 'Название', 'Статус', 'Описание', 'Тип', 'Активность', 'Можно постить', 'Можно предлагать',
+                    'Основная секция', 'подписчики', 'Верифицирована', 'Главное фото', 'Посты', 'Тематика']
+    db = sqlite3.connect(db_path)
+    cursor_obj = db.cursor()
+    cursor_obj.execute("select * from groups")
+    rows = cursor_obj.fetchall()
+    db.close()
+    rows.reverse()
+    if len(rows) > 10:
+        rows = rows[:10]
+    result_table = []
+    for row in rows:
+        json_posts = json.loads(row[12])
+        posts = ""
+        for i in range(len(json_posts)):
+            posts += f'Пост {i + 1}. Текст: "{json_posts[i]["text"]}". {json_posts[i]["photos_number"]} фото, ' + \
+                     f'{json_posts[i]["music_number"]} аудио прикреплено к посту. ' + \
+                     f'{json_posts[i]["likes"]} лайков, {json_posts[i]["reposts"]} репостов.\n'
+        row = list(row)
+        row[11] = html.Img(src=row[11])
+        row[12] = posts
+        result_table.append(row)
+    rows = result_table
+    return html.Table([
+        html.Thead(
+            html.Tr([html.Th(col, style={'border': '1px solid'}) for col in column_names])
+        ),
+        html.Tbody([
+            html.Tr([
+                html.Td(rows[row][col], style={'border': '1px solid'}) for col in range(len(rows[0]))
+            ]) for row in range(len(rows))
+        ])
+    ], style={'border': '2px solid', 'border-collapse': 'collapse'})
+
+
+"""
+Далее представлен код, создающий веб-приложение по адресу http://127.0.0.1:8050/ для добавления групп в базу данных
+"""
+database = sqlite3.connect(FILENAME)
+cursor = database.cursor()
+cursor.execute("create table if not exists groups(id integer, name text, status text, "
+               "description text, type text, activity text, can_post integer, can_suggest integer, "
+               "main_section integer, subscribers integer, verified integer, main_photo text, posts json,"
+               "theme text)")
+database.commit()
+database.close()
+app = Dash(__name__)
+app.layout = html.Div([
+    html.H1(children='Домашнее задание 3 по ОИРС'),
+    html.Div(children=[
+        html.Label('адрес группы ВК (после vk.com/)'),
+        html.Br(),
+        dcc.Input(id='input_address', type='text')
+    ]),
+    html.Div(children=[
+        html.Label('Тематика'),
+        html.Br(),
+        dcc.Dropdown(['Музыка', 'Путешествия', 'Программирование', 'Мемы', 'Другое'], 'Другое', id='input_theme')
+    ]),
+    html.Button(children=['Сохранить'], id='save_btn'),
+    html.Br(),
+    html.H3(children='', style={'color': 'red'}, id='error_msg'),
+    html.Br(),
+    html.Div(children=[get_10_groups_from_db(FILENAME)], id='accounts_table')
+])
+
+
+@app.callback(
+    Output('accounts_table', 'children'),
+    Output('error_msg', 'children'),
+    Input('save_btn', 'n_clicks'),
+    State('input_address', 'value'),
+    State('input_theme', 'value')
+)
+def update_table(n_clicks, input_address, input_theme):
+    if n_clicks is None:
+        raise PreventUpdate
+    if input_address is None:
+        return [get_10_groups_from_db(FILENAME)], 'Введите адрес группы'
+    if input_theme is None:
+        return [get_10_groups_from_db(FILENAME)], 'Выберите тематику группы'
+    try:
+        parse_vk_groups(VK_TOKEN, [input_address], [input_theme], FILENAME)
+    except:
+        return [get_10_groups_from_db(FILENAME)], 'Частная группа, невозможно получить информацию'
+    return [get_10_groups_from_db(FILENAME)], ''
+
+
+if __name__ == '__main__':
+    app.run_server(debug=True, host='127.0.0.1')
