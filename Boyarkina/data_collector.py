@@ -151,9 +151,10 @@ def get_groups_info(vk, groups_id, themes):
                     })
             result_posts.append(Post(post['text'], post['likes']['count'], post['reposts']['count'], post['post_type'],
                                      photo_num, photos, music_num, music))
-        result_groups.append(Group(-1*group['id'], group['name'], group['status'], group['description'], group['type'],
-                                   group['activity'], group['can_post'], group['can_suggest'], group['main_section'],
-                                   group['members_count'], group['verified'], group['photo_100'], result_posts,
-                                   themes[i]))
+        result_groups.append(
+            Group(-1 * group['id'], group['name'], group['status'], group['description'], group['type'],
+                  group['activity'], group['can_post'], group['can_suggest'], group['main_section'],
+                  group['members_count'], group['verified'], group['photo_100'], result_posts,
+                  themes[i]))
 
     return result_groups
