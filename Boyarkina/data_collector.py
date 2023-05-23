@@ -87,7 +87,7 @@ class Post:
     """
 
     def __init__(self, text, likes_number, reposts_number, post_type,
-                 photos_number, photos_info, music_number, music_info):
+                 photos_number, photos_info, music_number, music_info, video_number, video_info):
         """
         Конструктор класса
         :param text: текст поста, string
@@ -101,6 +101,9 @@ class Post:
         :param music_number: число аудиозаписей, прикрепленных к посту; int
         :param music_info: информация об аудиозаписях, прикрепленных к посту. массив элементов вида
         {'title': 'title', 'artist': 'artist'}, где по ключу title доступно название трека, а artist - исполнитель трека
+        :param video_number: число видеозаписей, прикрепленных к посту; int
+        :param video_info: информация о видеозаписях, прикрепленных к посту. массив элементов вида
+        {'title': 'title', 'duration': dur}, где по ключу title доступно название видео, а dur - продолжительность видео
         """
         self.__text = text
         self.__likes = likes_number
@@ -110,6 +113,8 @@ class Post:
         self.__photos_info = photos_info
         self.__music_num = music_number
         self.__music_info = music_info
+        self.__video_num = video_number
+        self.__video_info = video_info
 
     def get_fields(self):
         return {
@@ -120,7 +125,9 @@ class Post:
             'photos_number': self.__photos_num,
             'photos_info': self.__photos_info,
             'music_number': self.__music_num,
-            'music_info': self.__music_info
+            'music_info': self.__music_info,
+            'video_number': self.__video_num,
+            'video_info': self.__video_info
         }
 
 
@@ -146,6 +153,8 @@ def get_groups_info(vk, groups_id, themes):
             photos = []
             music_num = 0
             music = []
+            video_num = 0
+            video = []
             for element in media:
                 if element['type'] == 'photo':
                     photo_num += 1
@@ -159,8 +168,14 @@ def get_groups_info(vk, groups_id, themes):
                         'title': element['audio']['title'],
                         'artist': element['audio']['artist']
                     })
+                elif element['type'] == 'video':
+                    video_num += 1
+                    video.append({
+                        'title': element['video']['title'],
+                        'duration': element['video']['duration']
+                    })
             result_posts.append(Post(post['text'], post['likes']['count'], post['reposts']['count'], post['post_type'],
-                                     photo_num, photos, music_num, music))
+                                     photo_num, photos, music_num, music, video_num, video))
         result_groups.append(
             Group(-1 * group['id'], group['name'], group['status'], group['description'], group['type'],
                   group['activity'], group['can_post'], group['can_suggest'], group['main_section'],
@@ -214,8 +229,8 @@ def get_10_groups_from_db(db_path):
         posts = ""
         for i in range(len(json_posts)):
             posts += f'Пост {i + 1}. Текст: "{json_posts[i]["text"]}". {json_posts[i]["photos_number"]} фото, ' + \
-                     f'{json_posts[i]["music_number"]} аудио прикреплено к посту. ' + \
-                     f'{json_posts[i]["likes"]} лайков, {json_posts[i]["reposts"]} репостов.\n'
+                     f'{json_posts[i]["video_number"]} видео, {json_posts[i]["music_number"]} аудио прикреплено к ' \
+                     f'посту. {json_posts[i]["likes"]} лайков, {json_posts[i]["reposts"]} репостов.\n'
         row = list(row)
         row[11] = html.Img(src=row[11])
         row[12] = posts
