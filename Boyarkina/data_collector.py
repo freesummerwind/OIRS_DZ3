@@ -86,8 +86,8 @@ class Post:
     Других функций у класса нет, нужен для более емкого и удобного представления поста
     """
 
-    def __init__(self, text, likes_number, reposts_number, post_type,
-                 photos_number, photos_info, music_number, music_info, video_number, video_info):
+    def __init__(self, text, likes_number, reposts_number, post_type, photos_number, photos_info, music_number,
+                 music_info, video_number, video_info, links_number, links_info, docs_number, docs_info):
         """
         Конструктор класса
         :param text: текст поста, string
@@ -104,6 +104,11 @@ class Post:
         :param video_number: число видеозаписей, прикрепленных к посту; int
         :param video_info: информация о видеозаписях, прикрепленных к посту. массив элементов вида
         {'title': 'title', 'duration': dur}, где по ключу title доступно название видео, а dur - продолжительность видео
+        :param links_number: число ссылок, прикрепленных к посту; int
+        :param links_info: информация о ссылках, прикрепленных к посту. массив элементов вида
+        {'title': 'title', 'url': 'url'}, где по ключу title доступно название ссылки, а url - сама ссылка
+        :param docs_number: число документов, прикрепленных к посту; int
+        :param docs_info: информация о документах, прикрепленных к посту. массив строк, содержащих названия документов
         """
         self.__text = text
         self.__likes = likes_number
@@ -115,6 +120,10 @@ class Post:
         self.__music_info = music_info
         self.__video_num = video_number
         self.__video_info = video_info
+        self.__links_num = links_number
+        self.__links_info = links_info
+        self.__docs_num = docs_number
+        self.__docs_info = docs_info
 
     def get_fields(self):
         return {
@@ -127,7 +136,11 @@ class Post:
             'music_number': self.__music_num,
             'music_info': self.__music_info,
             'video_number': self.__video_num,
-            'video_info': self.__video_info
+            'video_info': self.__video_info,
+            'links_number': self.__links_num,
+            'links_info': self.__links_info,
+            'docs_number': self.__docs_num,
+            'docs_info': self.__docs_info,
         }
 
 
@@ -155,6 +168,10 @@ def get_groups_info(vk, groups_id, themes):
             music = []
             video_num = 0
             video = []
+            links_num = 0
+            links = []
+            docs_num = 0
+            docs = []
             for element in media:
                 if element['type'] == 'photo':
                     photo_num += 1
@@ -174,8 +191,18 @@ def get_groups_info(vk, groups_id, themes):
                         'title': element['video']['title'],
                         'duration': element['video']['duration']
                     })
-            result_posts.append(Post(post['text'], post['likes']['count'], post['reposts']['count'], post['post_type'],
-                                     photo_num, photos, music_num, music, video_num, video))
+                elif element['type'] == 'link':
+                    links_num += 1
+                    links.append({
+                        'title': element['link']['title'],
+                        'ulr': element['link']['url']
+                    })
+                elif element['type'] == 'doc':
+                    docs_num += 1
+                    docs.append(element['doc']['title'])
+            result_posts.append(Post(post['text'], post['likes']['count'], post['reposts']['count'],
+                                     post['post_type'], photo_num, photos, music_num, music, video_num,
+                                     video, links_num, links, docs_num, docs))
         result_groups.append(
             Group(-1 * group['id'], group['name'], group['status'], group['description'], group['type'],
                   group['activity'], group['can_post'], group['can_suggest'], group['main_section'],
@@ -229,8 +256,9 @@ def get_10_groups_from_db(db_path):
         posts = ""
         for i in range(len(json_posts)):
             posts += f'Пост {i + 1}. Текст: "{json_posts[i]["text"]}". {json_posts[i]["photos_number"]} фото, ' + \
-                     f'{json_posts[i]["video_number"]} видео, {json_posts[i]["music_number"]} аудио прикреплено к ' \
-                     f'посту. {json_posts[i]["likes"]} лайков, {json_posts[i]["reposts"]} репостов.\n'
+                     f'{json_posts[i]["video_number"]} видео, {json_posts[i]["music_number"]} аудио, ' \
+                     f'{json_posts[i]["links_number"]} ссылок, {json_posts[i]["docs_number"]} документов прикреплено ' \
+                     f'к посту. {json_posts[i]["likes"]} лайков, {json_posts[i]["reposts"]} репостов.\n'
         row = list(row)
         row[11] = html.Img(src=row[11])
         row[12] = posts
