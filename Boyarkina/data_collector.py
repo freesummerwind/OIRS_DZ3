@@ -189,7 +189,7 @@ def get_groups_info(vk, groups_id, themes):
                     video_num += 1
                     video.append({
                         'title': element['video']['title'],
-                        'duration': element['video']['duration']
+                        'duration': (element['video']['duration'] if 'duration' in element['video'] else 0)
                     })
                 elif element['type'] == 'link':
                     links_num += 1
