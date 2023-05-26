@@ -28,3 +28,9 @@ https://docs.google.com/document/d/1ue0_5ELdnJO6c1I2naOoDDJg5wkNU_9L1g0zoRMLojU/
 12) Количество видео в сообществе
 13) Количество аудиозаписей в сообществе
 14) Количество статей в сообществе
+
+
+Часть 2:
+Файл oirs_dz3_part2.ipynb + файл requirments_part2.txt
+
+Созданы 2 модели (SGDClassifier и KNeighborsClassifier) для предсказания темы поста по вводимому id поста
