@@ -34,3 +34,6 @@ https://docs.google.com/document/d/1ue0_5ELdnJO6c1I2naOoDDJg5wkNU_9L1g0zoRMLojU/
 Файл oirs_dz3_part2.ipynb + файл requirments_part2.txt
 
 Созданы 2 модели (SGDClassifier и KNeighborsClassifier) для предсказания темы поста по вводимому id поста
+
+Часть 3:
+Файл post_topic.py + файл requirments_part3.txt
