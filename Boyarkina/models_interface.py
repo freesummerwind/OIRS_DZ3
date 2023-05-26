@@ -31,7 +31,7 @@ def lemmatize(doc):
 
 
 def get_text_similarity(tokenized_text, theme_word):
-    w2v_model = Word2Vec.load("word2vec.model")
+    w2v_model = Word2Vec.load("models/word2vec.model")
     text_similarity = 0.
     used_words = 0
     for word in tokenized_text:
@@ -145,19 +145,19 @@ def get_group_theme(vk_token, group_address, model_number):
     list_group.append(parsed_group.get_posts())
     if model_number == 0:
         group_features = prepare_group_info_full_model(list_group)
-        model = joblib.load('model_ridge_full.pkl')
+        model = joblib.load('models/model_ridge_full.pkl')
         return 'Группа: ' + list_group[1] + ', тема поста: ' + themes_inverse[model.predict([group_features])[0]]
     elif model_number == 1:
         group_features = prepare_group_info_no_posts_model(list_group)
-        model = joblib.load('model_ridge_no_posts.pkl')
+        model = joblib.load('models/model_ridge_no_posts.pkl')
         return 'Группа: ' + list_group[1] + ', тема поста: ' + themes_inverse[model.predict([group_features])[0]]
     elif model_number == 2:
         group_features = prepare_group_info_only_texts_model(list_group)
-        model = joblib.load('model_ridge_only_texts.pkl')
+        model = joblib.load('models/model_ridge_only_texts.pkl')
         return 'Группа: ' + list_group[1] + ', тема поста: ' + themes_inverse[model.predict([group_features])[0]]
     elif model_number == 3:
         group_features = prepare_group_info_full_model(list_group)
-        model = keras.models.load_model('model_seq_full.h5')
+        model = keras.models.load_model('models/model_seq_full.h5')
         prediction = model.predict([group_features])[0]
         max_index = 0
         for i in range(5):
@@ -166,7 +166,7 @@ def get_group_theme(vk_token, group_address, model_number):
         return 'Группа: ' + list_group[1] + ', тема поста: ' + themes_inverse[max_index]
     elif model_number == 4:
         group_features = prepare_group_info_no_posts_model(list_group)
-        model = keras.models.load_model('model_seq_no_posts.h5')
+        model = keras.models.load_model('models/model_seq_no_posts.h5')
         prediction = model.predict([group_features])[0]
         max_index = 0
         for i in range(5):
@@ -175,7 +175,7 @@ def get_group_theme(vk_token, group_address, model_number):
         return 'Группа: ' + list_group[1] + ', тема поста: ' + themes_inverse[max_index]
     else:
         group_features = prepare_group_info_only_texts_model(list_group)
-        model = keras.models.load_model('model_seq_only_texts.h5')
+        model = keras.models.load_model('models/model_seq_only_texts.h5')
         prediction = model.predict([group_features])[0]
         max_index = 0
         for i in range(5):
