@@ -65,7 +65,7 @@ app.layout = html.Div(
 # Определение max_sequence_length
 max_sequence_length = 100
 
-def get_group_id_from_link(group_link, access_token='vk1.a.FCrKKo7nPplXArjOQCimxG8x0B6QUKWRMTCX93zdFc2KaWFAQR4WEznkx1TQ9Vx5DJIXxWt1vG8AeYpyLDRYcRDvLhxpvU-_QNGTRK-Is8RsgxcR_NdP40-uDeVXiOEdubuGdO9PDr-G2kx0MB_1s5eAtnvNJXjvYpj4tPVXekbjp2paKpHrMSY8TU44VVJk4Hqe1ttZ_OttSx2pHHU54Q', version='5.130'):
+def get_group_id_from_link(group_link, access_token='', version='5.130'):
     screen_name = group_link.split('/')[-1]
     url = 'https://api.vk.com/method/utils.resolveScreenName'
     params = {
@@ -83,7 +83,7 @@ def get_group_id_from_link(group_link, access_token='vk1.a.FCrKKo7nPplXArjOQCimx
         return None
 
 def get_posts_from_vk(group_link, count):
-    access_token = 'vk1.a.FCrKKo7nPplXArjOQCimxG8x0B6QUKWRMTCX93zdFc2KaWFAQR4WEznkx1TQ9Vx5DJIXxWt1vG8AeYpyLDRYcRDvLhxpvU-_QNGTRK-Is8RsgxcR_NdP40-uDeVXiOEdubuGdO9PDr-G2kx0MB_1s5eAtnvNJXjvYpj4tPVXekbjp2paKpHrMSY8TU44VVJk4Hqe1ttZ_OttSx2pHHU54Q'
+    access_token = ''
     version = '5.130'
     group_id = get_group_id_from_link(group_link, access_token, version)
     if group_id is None:
